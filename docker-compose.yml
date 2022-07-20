@@ -1,6 +1,9 @@
 version: "3.6"
 
-services:  
+services:
+  nats:
+    image: "nats-streaming:0.9.2"
+    restart: "always"
   postgres:
     build: "./postgres"
     restart: "always"
