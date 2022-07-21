@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"log"
 	"meower/db"
+	"meower/event"
+	"net/http"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/tinrab/retry"
 )
 
@@ -20,6 +23,10 @@ func main(){
 	var cfg Config
 	err := envconfig.Process("",&cfg)
 	if err != nil{
+		log.Fatal(err)
+	}
+	router:= newRouter()
+	if err := http.ListenAndServe(":8080",router);err != nil{
 		log.Fatal(err)
 	}
 
@@ -46,3 +53,11 @@ func main(){
 	  })
 	  defer event.Close()
 }
+
+func newRouter() (router *mux.Router) {  
+	router = mux.NewRouter()
+	router.HandleFunc("/meows", createMeowHandler).
+	  Methods("POST").
+	  Queries("body", "{body}")
+	return
+  }

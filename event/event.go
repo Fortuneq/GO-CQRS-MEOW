@@ -11,7 +11,7 @@ type EvenStore interface{
 
 var impl EvenStore
 
-func SetEvenStore(es EvenStore){
+func SetEventStore(es EvenStore){
 	impl = es
 }
 
