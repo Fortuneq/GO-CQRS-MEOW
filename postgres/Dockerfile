@@ -1,3 +1,3 @@
-FROM postgers:10.3
+FROM postgres
 COPY up.sql /docker-entrypoint-initdb.d/1.sql  
 CMD ["postgres"]  

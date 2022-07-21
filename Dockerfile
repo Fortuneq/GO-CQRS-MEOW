@@ -3,7 +3,6 @@ RUN apk --no-cache add gcc g++ make ca-certificates
 WORKDIR /go/src/github.com/tinrab/meower
 
 COPY go.mod go.sum ./
-COPY vendor vendor
 COPY util util
 COPY event event
 COPY db db
@@ -13,7 +12,7 @@ COPY meow-service meow-service
 COPY query-service query-service
 COPY pusher-service pusher-service
 
-RUN GO111MODULE=on go install -mod vendor ./...
+RUN GO111MODULE=on go install -mod go.sum
 
 FROM alpine:3.11
 WORKDIR /usr/bin
