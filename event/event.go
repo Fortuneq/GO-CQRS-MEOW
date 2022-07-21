@@ -2,31 +2,31 @@ package event
 
 import "meower/schema"
 
-type EvenStore interface{
-	CLose()
-	PublishMeowCreated(meow schema.Meow)error
-	SubscibeMeowCreated()(<-chan MeowCreatedMessage,error)
-	OnMeowCreated(f func(MeowCreatedMessage))error
+type Store interface {
+	Close()
+	PublishMeowCreated(meow schema.Meow) error
+	SubscribeMeowCreated() (<-chan MeowCreatedMessage, error)
+	OnMeowCreated(f func(MeowCreatedMessage)) error
 }
 
-var impl EvenStore
+var impl Store
 
-func SetEventStore(es EvenStore){
+func SetEventStore(es Store) {
 	impl = es
 }
 
-func Close(){
-	impl.CLose()
+func Close() {
+	impl.Close()
 }
 
-func PublishMeowCreated(meow schema.Meow) error{
+func PublishMeowCreated(meow schema.Meow) error {
 	return impl.PublishMeowCreated(meow)
 }
 
-func SubscibeMeowCreated()(<-chan MeowCreatedMessage,error){
-	return impl.SubscibeMeowCreated()
+func SubscribeMeowCreated() (<-chan MeowCreatedMessage, error) {
+	return impl.SubscribeMeowCreated()
 }
 
-func OnMeowCreated(f func(MeowCreatedMessage))error{
+func OnMeowCreated(f func(MeowCreatedMessage)) error {
 	return impl.OnMeowCreated(f)
 }

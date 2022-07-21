@@ -2,22 +2,22 @@ package main
 
 import "time"
 
-const(
-	kindMeowsCreated = iota + 1
+const (
+	KindMeowCreated = iota + 1
 )
 
-type MeowCreatedMessage struct {  
+type MeowCreatedMessage struct {
 	Kind      uint32    `json:"kind"`
 	ID        string    `json:"id"`
 	Body      string    `json:"body"`
-	CreatedAt time.Time`json:"created_at"`
-  }
+	CreatedAt time.Time `json:"created_at"`
+}
 
-func newMeowCreatedMessage(id string,body string,createdAt time.Time) *MeowCreatedMessage{
+func newMeowCreatedMessage(id string, body string, createdAt time.Time) *MeowCreatedMessage {
 	return &MeowCreatedMessage{
-		Kind: kindMeowsCreated,
-		ID: id,
-		Body: body,
+		Kind:      KindMeowCreated,
+		ID:        id,
+		Body:      body,
 		CreatedAt: createdAt,
 	}
 }

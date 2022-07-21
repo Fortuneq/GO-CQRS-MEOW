@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"sync"
 
-	"golang.org/x/net/websocket"
+	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{
@@ -30,6 +30,7 @@ func newHub() *Hub {
 		mutex:      &sync.Mutex{},
 	}
 }
+
 func (hub *Hub) run() {
 	for {
 		select {
@@ -54,31 +55,8 @@ func (hub *Hub) send(message interface{}, client *Client) {
 	data, _ := json.Marshal(message)
 	client.outbound <- data
 }
-func (hub *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
-	socket, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "could not upgrade", http.StatusInternalServerError)
-		return
-	}
-	client := newClient(hub, socket)
-	hub.register <- client
 
-	go client.write()
-}
-func (hub *Hub) onConnect(client *Client) {
-	log.Println("client connected: ", client.socket.RemoteAddr())
-
-	// Make new client
-	hub.mutex.Lock()
-	defer hub.mutex.Unlock()
-	client.id = hub.nextID
-	hub.nextID++
-	hub.clients = append(hub.clients, client)
-}
-func (hub *Hub) onDisconnect(client *Client) {
-	log.Println("client disconnected: ", client.socket.RemoteAddr())
-
+func (hub *Hub) disconnect(client *Client) {
 	client.close()
 	hub.mutex.Lock()
 	defer hub.mutex.Unlock()
@@ -95,4 +73,33 @@ func (hub *Hub) onDisconnect(client *Client) {
 	copy(hub.clients[i:], hub.clients[i+1:])
 	hub.clients[len(hub.clients)-1] = nil
 	hub.clients = hub.clients[:len(hub.clients)-1]
+}
+
+func (hub *Hub) handleWebSocket(w http.ResponseWriter, r *http.Request) {
+	socket, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "could not upgrade", http.StatusInternalServerError)
+		return
+	}
+	client := newClient(hub, socket)
+	hub.register <- client
+
+	go client.write()
+}
+
+func (hub *Hub) onConnect(client *Client) {
+	log.Println("client connected: ", client.socket.RemoteAddr())
+
+	// Make new client
+	hub.mutex.Lock()
+	defer hub.mutex.Unlock()
+	client.id = hub.nextID
+	hub.nextID++
+	hub.clients = append(hub.clients, client)
+}
+
+func (hub *Hub) onDisconnect(client *Client) {
+	log.Println("client disconnected: ", client.socket.RemoteAddr())
+	hub.disconnect(client)
 }
