@@ -10,4 +10,6 @@ services:
     environment:
       POSTGRES_DB: "meower"
       POSTGRES_USER: "meower"
-      POSTGRES_PASSWORD: "123456"
+      POSTGRES_PASSWORD: "123456" 
+  elasticsearch:
+  image: 'docker.elastic.co/elasticsearch/elasticsearch:6.2.3'
