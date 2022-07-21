@@ -53,14 +53,27 @@ func (mq *NatsEventStore)writeMessage(m Message)([]byte,error){
 	return b.Bytes(),nil
 }
 
-func (e *NatsEventStore) OnMeowCreated(f func(MeowCreatedMessage))(err error){
+func (e *NatsEventStore) SubscribeMeowCreated() (<-chan MeowCreatedMessage, error) {  
 	m := MeowCreatedMessage{}
-	e.MeowCreatedSubscription, err := e.nc.Subscribe(m.Key(),func(msg *nats.Msg){
-		e.readMessage(msg.Data,&m)
-		f(m)
-	})
-	return
-}
+	e.meowCreatedChan = make(chan MeowCreatedMessage, 64)
+	ch := make(chan *nats.Msg, 64)
+	var err error
+	e.MeowCreatedSubscription, err = e.nc.ChanSubscribe(m.Key(), ch)
+	if err != nil {
+	  return nil, err
+	}
+	// Decode message
+	go func() {
+	  for {
+		select {
+		case msg := <-ch:
+		  e.readMessage(msg.Data, &m)
+		  e.meowCreatedChan <- m
+		}
+	  }
+	}()
+	return (<-chan MeowCreatedMessage)(e.meowCreatedChan), nil
+  }
 
 func( mq * NatsEventStore)readMessage(data []byte,m interface{})error{
 	b := bytes.Buffer{}
