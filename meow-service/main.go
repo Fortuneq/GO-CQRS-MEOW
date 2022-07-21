@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/kelseyhightower/envconfig"
 	"github.com/tinrab/retry"
 )
 
