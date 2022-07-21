@@ -34,4 +34,15 @@ func main(){
 		return nil
 	})
 	defer db.CLose()
+
+	retry.ForeverSleep(2*time.Second, func(_ int) error {  
+		es, err := event.NewNats(fmt.Sprintf("nats://%s", cfg.NatsAddress))
+		if err != nil {
+		  log.Println(err)
+		  return err
+		}
+		event.SetEventStore(es)
+		return nil
+	  })
+	  defer event.Close()
 }
