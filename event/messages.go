@@ -2,16 +2,16 @@ package event
 
 import "time"
 
-type Message interface{
+type Message interface {
 	Key() string
 }
 
-type MeowCreatedMessage struct{
-	ID string
-	Body string
+type MeowCreatedMessage struct {
+	ID        string
+	Body      string
 	CreatedAt time.Time
 }
 
-func (m *MeowCreatedMessage)Key()string{
+func (m *MeowCreatedMessage) Key() string {
 	return "meow.created"
 }
