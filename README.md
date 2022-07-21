@@ -4,6 +4,8 @@ Normal microservice on GO +  JS  + NATS + POSTGRES +  Docker compose
 
 Проект создан по мотивам одной статьи с созданием обычного сайта для кошек 
 
+Для запуска использовать 
 ```
-docker run postgres
+$ docker-compose up -d --build
+$ cd frontend && yarn serve
 ```
